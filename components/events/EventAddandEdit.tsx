@@ -185,12 +185,12 @@ const EventAddandEdit = ({
       }
       if (selectedEvent) {
         await axios.put(
-          `http://localhost:5000/api/events/${selectedEvent._id}`,
+          `https://eventsapi-umam.onrender.com/api/events/${selectedEvent._id}`,
           productPayload,
           { headers: { Authorization: `Bearer ${access_token}` } }
         );
       } else {
-        await axios.post(`http://localhost:5000/api/events`, productPayload, {
+        await axios.post(`https://eventsapi-umam.onrender.com/api/events`, productPayload, {
           headers: { Authorization: `Bearer ${access_token}` },
         });
       }

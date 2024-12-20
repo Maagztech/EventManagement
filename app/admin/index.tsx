@@ -30,7 +30,7 @@ export default function Index() {
   const [events, setEvents] = useState<Event[]>([]);
 
   const fetchEvents = async () => {
-    const response = await axios.get("http://localhost:5000/api/events", {
+    const response = await axios.get("https://eventsapi-umam.onrender.com/api/events", {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
@@ -57,7 +57,7 @@ export default function Index() {
 
   const handleDeleteEvent = (eventId: string) => {
     const deleteEvent = async () => {
-      await axios.delete(`http://localhost:5000/api/events/${eventId}`, {
+      await axios.delete(`https://eventsapi-umam.onrender.com/api/events/${eventId}`, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
       setEvents(events.filter((event) => event._id !== eventId));

@@ -20,7 +20,7 @@ export default function Registered() {
   useEffect(() => {
     const fetchRegisteredEvents = async () => {
       const response = await axios.get(
-        "http://localhost:5000/api/events/registered",
+        "https://eventsapi-umam.onrender.com/api/events/registered",
         {
           headers: {
             Authorization: `Bearer ${access_token}`,

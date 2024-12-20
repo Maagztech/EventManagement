@@ -31,7 +31,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const fetchEvents = async () => {
       const response = await axios.get(
-        "http://localhost:5000/api/events/public"
+        "https://eventsapi-umam.onrender.com/api/events/public"
       );
       setEvents(response.data);
       setFilteredEvents(response.data);
