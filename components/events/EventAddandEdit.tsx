@@ -43,7 +43,6 @@ const EventAddandEdit = ({
       eventData.image.map(async (image: string) => {
         if (image.startsWith("http")) return image;
         try {
-          console.log(image)
           const formData = new FormData();
           formData.append("file", {
             uri: image,
@@ -62,11 +61,20 @@ const EventAddandEdit = ({
           return response.data.secure_url;
         } catch (error) {
           console.error("Error uploading image:", error);
-          return null; // Handle failed uploads gracefully
+          return null; // Return null for failed uploads
         }
       })
     );
-    return uploadedImageUrls.filter(Boolean); // Filter out null values
+
+    // Filter out null values and add the default image URL if the list is empty
+    const validImages = uploadedImageUrls.filter(Boolean) as string[];
+    if (validImages.length === 0) {
+      validImages.push(
+        "https://cdn2.allevents.in/transup/a7/a438d4cf8e4ce8a46141fe7c4ffaa8/ae-christmas-logo.webp"
+      );
+    }
+
+    return validImages;
   };
 
   const types = [
