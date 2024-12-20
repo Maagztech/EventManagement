@@ -1,4 +1,3 @@
-import { useAuth } from "@/context/authContext";
 import DatePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
@@ -16,9 +15,8 @@ import {
 } from "react-native";
 
 export default function HomeScreen() {
-  const { access_token }: any = useAuth();
   interface Event {
-    id: number;
+    _id: string;
     image:string[];
     title: string;
     description: string;
@@ -29,16 +27,18 @@ export default function HomeScreen() {
     category: string[];
   }
   const [events, setEvents] = useState<Event[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState(events);
   useEffect(() => {
     const fetchEvents = async () => {
       const response = await axios.get(
-        "https://eventsapi-umam.onrender.com/api/events/public"
+        "http://localhost:5000/api/events/public"
       );
       setEvents(response.data);
+      setFilteredEvents(response.data);
     };
     fetchEvents();
   }, []);
-  const [filteredEvents, setFilteredEvents] = useState(events);
+
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [category, setCategory] = useState("");
   const [location, setLocation] = useState("");
@@ -112,7 +112,7 @@ export default function HomeScreen() {
       <ScrollView>
         {filteredEvents.map((event, index) => (
           <Pressable
-            onPress={() => router.push(("/event/" + index) as never)}
+            onPress={() => router.push(("/event/" + event._id) as never)}
             key={index}
             style={styles.card}
           >

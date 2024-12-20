@@ -4,44 +4,57 @@ import React, { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function Registered() {
-  const {access_token}: any = useAuth();
+  const { access_token }: any = useAuth();
   interface Event {
     id: number;
-    image: string;
+    image: string[];
     title: string;
     description: string;
     date: string;
     location: string;
     price: number;
     seats: number;
-    category: string;
+    category: string[];
   }
   const [registeredEvents, setRegisteredEvents] = useState<Event[]>([]);
   useEffect(() => {
     const fetchRegisteredEvents = async () => {
       const response = await axios.get(
-        "https://eventsapi-umam.onrender.com/api/events/registered",
+        "http://localhost:5000/api/events/registered",
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
           },
         }
       );
-      setRegisteredEvents(response.data);
+      const answer = response.data.map((event: any) => {
+        return {
+          id: event.eventId._id,
+          image: event.eventId.image,
+          title: event.eventId.title,
+          description: event.eventId.description,
+          date: event.eventId.date,
+          location: event.eventId.location,
+          price: event.eventId.price,
+          seats: event.eventId.seats,
+          category: event.eventId.category,
+        };
+      });
+      setRegisteredEvents(answer);
     };
-    fetchRegisteredEvents();
-  }, []);
+    if (access_token) fetchRegisteredEvents();
+  }, [access_token]);
   return (
     <View style={styles.container}>
       <ScrollView>
         {registeredEvents.map((event, index) => (
           <View key={index} style={styles.card}>
-            <Image source={{ uri: event.image }} style={styles.image} />
+            <Image source={{ uri: event.image[0] }} style={styles.image} />
             <Text style={styles.title}>{event.title}</Text>
             <Text style={styles.description}>{event.description}</Text>
             <Text style={styles.detail}>
               <Text style={styles.label}>Date: </Text>
-              {event.date}
+              {event.date.split("T")[0]}
             </Text>
             <Text style={styles.detail}>
               <Text style={styles.label}>Location: </Text>
@@ -57,7 +70,7 @@ export default function Registered() {
             </Text>
             <Text style={styles.detail}>
               <Text style={styles.label}>Category: </Text>
-              {event.category}
+              {event.category.join(", ")}
             </Text>
           </View>
         ))}

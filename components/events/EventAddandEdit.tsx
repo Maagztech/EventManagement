@@ -24,54 +24,49 @@ type AddEventModalProps = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   setLoading?: (loading: boolean) => void; // Optional setLoading prop
+  fetchEvents: () => void;
 };
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const EventAddandEdit = ({
   isOpen,
   setIsOpen,
   setLoading,
+  fetchEvents,
 }: AddEventModalProps) => {
   const modalHeight = useRef(new Animated.Value(SCREEN_HEIGHT * 0.8)).current;
   const { access_token }: any = useAuth();
-  const { selectedEvent, setSelectedEvent, setMadeEvents }: any =
-    useEventContext();
+  const { selectedEvent, setSelectedEvent }: any = useEventContext();
   const [showDropdown, setShowDropdown] = useState(false);
 
   const uploadImages = async (eventData: any) => {
-    const uploadedImageUrls: string[] = [];
-
-    for (const image of eventData.image) {
-      if (!image.startsWith("http")) {
+    const uploadedImageUrls = await Promise.all(
+      eventData.image.map(async (image: string) => {
+        if (image.startsWith("http")) return image;
         try {
+          console.log(image)
           const formData = new FormData();
           formData.append("file", {
-            uri: image, // Local file URI from ImagePicker or similar
-            name: `${eventData.title}.jpg`, // Name of the file
-            type: "image/jpeg", // MIME type
-          } as any); // Cast to 'any' to satisfy TypeScript
+            uri: image,
+            name: `${eventData.title}.jpg`,
+            type: "image/jpeg",
+          } as any);
           formData.append("upload_preset", "esybulk");
           formData.append("cloud_name", "dv5daoaut");
-
           const response = await axios.post(
             "https://api.cloudinary.com/v1_1/dv5daoaut/image/upload",
             formData,
             {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
+              headers: { "Content-Type": "multipart/form-data" },
             }
           );
-
-          uploadedImageUrls.push(response.data.secure_url);
+          return response.data.secure_url;
         } catch (error) {
           console.error("Error uploading image:", error);
+          return null; // Handle failed uploads gracefully
         }
-      } else {
-        uploadedImageUrls.push(image); // Add existing image URLs directly
-      }
-    }
-
-    return uploadedImageUrls;
+      })
+    );
+    return uploadedImageUrls.filter(Boolean); // Filter out null values
   };
 
   const types = [
@@ -181,13 +176,13 @@ const EventAddandEdit = ({
         setLoading(false);
       }
       if (selectedEvent) {
-        await axios.post(
-          `https://eventsapi-umam.onrender.com/api/events/${selectedEvent._id}`,
+        await axios.put(
+          `http://localhost:5000/api/events/${selectedEvent._id}`,
           productPayload,
           { headers: { Authorization: `Bearer ${access_token}` } }
         );
       } else {
-        await axios.post(`https://eventsapi-umam.onrender.com/api/events`, productPayload, {
+        await axios.post(`http://localhost:5000/api/events`, productPayload, {
           headers: { Authorization: `Bearer ${access_token}` },
         });
       }
@@ -205,10 +200,7 @@ const EventAddandEdit = ({
     } catch (error) {
       console.log(error);
     }
-    const response = await axios.get("https://eventsapi-umam.onrender.com/api/events", {
-      headers: { Authorization: `Bearer ${access_token}` },
-    });
-    setMadeEvents(response.data);
+    fetchEvents();
     closeModal();
   };
 

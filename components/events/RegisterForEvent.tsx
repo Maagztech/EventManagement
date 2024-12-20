@@ -47,7 +47,6 @@ const RegisterForEvent = ({ isOpen, setIsOpen, setLoading, id }: any) => {
   };
 
   const handleAddProduct = async () => {
-    setRegistered(!registered);
     if (!canSignUp()) {
       Toast.show({
         type: "info",
@@ -56,7 +55,6 @@ const RegisterForEvent = ({ isOpen, setIsOpen, setLoading, id }: any) => {
       });
       return;
     }
-    setIsOpen(false);
     try {
       if (setLoading) {
         setLoading(true);
@@ -66,13 +64,11 @@ const RegisterForEvent = ({ isOpen, setIsOpen, setLoading, id }: any) => {
         lastName: userData.lastName,
         email: userData.email,
         mobile: userData.mobile,
+        eventId: id,
       };
-      if (setLoading) {
-        setLoading(false);
-      }
 
       await axios.post(
-        `https://eventsapi-umam.onrender.com/api/events`,
+        `http://localhost:5000/api/events/register`,
         productPayload,
         { headers: { Authorization: `Bearer ${access_token}` } }
       );
@@ -84,7 +80,6 @@ const RegisterForEvent = ({ isOpen, setIsOpen, setLoading, id }: any) => {
         text2: "Something went wrong. Please try again.",
       });
     }
-    closeModal();
   };
 
   return (
@@ -106,28 +101,28 @@ const RegisterForEvent = ({ isOpen, setIsOpen, setLoading, id }: any) => {
                   label="First Name"
                   value={userData.firstName}
                   onChangeText={(value: string) =>
-                    setUserData((prevData) => ({ ...prevData, title: value }))
+                    setUserData((prevData) => ({ ...prevData, firstName: value }))
                   }
                 />
                 <LabeledInput
                   label="Last Name"
                   value={userData.lastName}
                   onChangeText={(value: string) =>
-                    setUserData((prevData) => ({ ...prevData, title: value }))
+                    setUserData((prevData) => ({ ...prevData, lastName: value }))
                   }
                 />
                 <LabeledInput
                   label="Email ID"
                   value={userData.email}
                   onChangeText={(value: string) =>
-                    setUserData((prevData) => ({ ...prevData, title: value }))
+                    setUserData((prevData) => ({ ...prevData, email: value }))
                   }
                 />
                 <LabeledInput
                   label="Mobile Number"
                   value={userData.mobile}
                   onChangeText={(value: string) =>
-                    setUserData((prevData) => ({ ...prevData, title: value }))
+                    setUserData((prevData) => ({ ...prevData, mobile: value }))
                   }
                 />
                 <TouchableOpacity

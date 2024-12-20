@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
         setIsLoading(true);
         const refresh_token = await getLocalUser();
         if (refresh_token) {
-          const response = await axios.post("https://eventsapi-umam.onrender.com/api/refresh_token", { refresh_token });
+          const response = await axios.post("http://localhost:5000/api/refresh_token", { refresh_token });
           setUserInfo(response.data.user)
           router.push("/(client)");
           setAccessToken(response.data.access_token)
@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "https://eventsapi-umam.onrender.com/api/auth", { userName, password }
+        "http://localhost:5000/api/auth", { userName, password }
       );
       const user = response.data;
       setUserInfo(user.user)

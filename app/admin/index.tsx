@@ -15,7 +15,7 @@ import {
 export default function Index() {
   const { access_token }: any = useAuth();
   interface Event {
-    id: number;
+    _id: string;
     image: string[];
     title: string;
     description: string;
@@ -24,40 +24,45 @@ export default function Index() {
     price: number;
     seats: number;
     category: string[];
+    registeredCount: number;
   }
 
   const [events, setEvents] = useState<Event[]>([]);
+
+  const fetchEvents = async () => {
+    const response = await axios.get("http://localhost:5000/api/events", {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+    setEvents(response.data);
+  };
+
   useEffect(() => {
-    const fetchEvents = async () => {
-      const response = await axios.get("https://eventsapi-umam.onrender.com/api/events", {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      });
-      setEvents(response.data);
-    };
-    fetchEvents();
-  }, []);
+    if (access_token) fetchEvents();
+  }, [access_token]);
   const { selectedEvent, setSelectedEvent }: any = useEventContext();
   const handleAddEvent = () => {
     setSelectedEvent(null);
     setOpen(true);
   };
   const [open, setOpen] = useState(false);
-  const handleEditEvent = (eventId: number) => {
-    const event = events.find((event) => event.id === eventId);
+  const handleEditEvent = (eventId: string) => {
+    const event = events.find((event) => event._id === eventId);
     if (event) {
       setSelectedEvent(event);
       setOpen(true);
     }
   };
 
-  const handleDeleteEvent = (eventId: number) => {
-    const event = events.find((event) => event.id === eventId);
-    if (event) {
-      setSelectedEvent(event);
-      setOpen(true);
-    }
+  const handleDeleteEvent = (eventId: string) => {
+    const deleteEvent = async () => {
+      await axios.delete(`http://localhost:5000/api/events/${eventId}`, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
+      setEvents(events.filter((event) => event._id !== eventId));
+    };
+    deleteEvent();
   };
 
   return (
@@ -72,18 +77,18 @@ export default function Index() {
 
       <ScrollView contentContainerStyle={styles.eventList}>
         {events.map((event) => (
-          <View key={event.id} style={styles.eventCard}>
+          <View key={event._id} style={styles.eventCard}>
             <Image source={{ uri: event.image[0] }} style={styles.eventImage} />
             <Text style={styles.eventTitle}>{event.title}</Text>
             <Text>{event.description}</Text>
-            <Text>{`Date: ${event.date}`}</Text>
+            <Text>{`Date: ${event.date.split("T")[0]}`}</Text>
             <Text>{`Location: ${event.location}`}</Text>
             <Text>{`Price: ${event.price}`}</Text>
             <Text>{`Seats: ${event.seats}`}</Text>
             <Text>{`Category: ${event.category.join(", ")}`}</Text>
-
+            <Text>{`Total Registered: ${event.registeredCount}`}</Text>
             <Pressable
-              onPress={() => handleEditEvent(event.id)}
+              onPress={() => handleEditEvent(event._id)}
               style={({ pressed }) => [
                 styles.editButton,
                 pressed && styles.pressed,
@@ -92,7 +97,7 @@ export default function Index() {
               <Text style={styles.buttonText}>Edit Event</Text>
             </Pressable>
             <Pressable
-              onPress={() => handleDeleteEvent(event.id)}
+              onPress={() => handleDeleteEvent(event._id)}
               style={({ pressed }) => [
                 styles.editButton,
                 pressed && styles.pressed,
@@ -103,7 +108,11 @@ export default function Index() {
           </View>
         ))}
       </ScrollView>
-      <EventAddandEdit isOpen={open} setIsOpen={setOpen} />
+      <EventAddandEdit
+        isOpen={open}
+        setIsOpen={setOpen}
+        fetchEvents={fetchEvents}
+      />
     </View>
   );
 }
