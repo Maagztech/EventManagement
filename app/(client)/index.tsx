@@ -19,20 +19,20 @@ export default function HomeScreen() {
   const { access_token }: any = useAuth();
   interface Event {
     id: number;
-    image: string;
+    image:string[];
     title: string;
     description: string;
     date: string;
     location: string;
     price: number;
     seats: number;
-    category: string;
+    category: string[];
   }
   const [events, setEvents] = useState<Event[]>([]);
   useEffect(() => {
     const fetchEvents = async () => {
       const response = await axios.get(
-        "http://localhost:5000/api/events/public"
+        "https://eventsapi-umam.onrender.com/api/events/public"
       );
       setEvents(response.data);
     };
@@ -48,7 +48,7 @@ export default function HomeScreen() {
       events.filter(
         (event) =>
           (!date || event.date.includes(date.toISOString().split("T")[0])) &&
-          (category === "" || event.category === category) &&
+          (category === "" || event.category.includes(category)) &&
           (location === "" ||
             event.location.toLowerCase().includes(location.toLowerCase()))
       )
@@ -116,7 +116,7 @@ export default function HomeScreen() {
             key={index}
             style={styles.card}
           >
-            <Image source={{ uri: event.image }} style={styles.image} />
+            <Image source={{ uri: event.image[0] }} style={styles.image} />
             <Text style={styles.title}>{event.title}</Text>
             <Text style={styles.description}>{event.description}</Text>
             <Text style={styles.detail}>
@@ -137,7 +137,7 @@ export default function HomeScreen() {
             </Text>
             <Text style={styles.detail}>
               <Text style={styles.label}>Category: </Text>
-              {event.category}
+              {event.category.join(", ")}
             </Text>
           </Pressable>
         ))}

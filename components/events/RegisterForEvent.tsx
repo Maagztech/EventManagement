@@ -72,9 +72,9 @@ const RegisterForEvent = ({ isOpen, setIsOpen, setLoading, id }: any) => {
       }
 
       await axios.post(
-        `http://localhost:5000/api/events`,
+        `https://eventsapi-umam.onrender.com/api/events`,
         productPayload,
-        { headers: { Authorization: `${access_token}` } }
+        { headers: { Authorization: `Bearer ${access_token}` } }
       );
       setRegistered(true);
     } catch (error) {

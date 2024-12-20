@@ -16,20 +16,20 @@ export default function Index() {
   const { access_token }: any = useAuth();
   interface Event {
     id: number;
-    image: string;
+    image: string[];
     title: string;
     description: string;
     date: string;
     location: string;
     price: number;
     seats: number;
-    category: string;
+    category: string[];
   }
 
   const [events, setEvents] = useState<Event[]>([]);
   useEffect(() => {
     const fetchEvents = async () => {
-      const response = await axios.get("http://localhost:5000/api/events", {
+      const response = await axios.get("https://eventsapi-umam.onrender.com/api/events", {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
@@ -73,14 +73,14 @@ export default function Index() {
       <ScrollView contentContainerStyle={styles.eventList}>
         {events.map((event) => (
           <View key={event.id} style={styles.eventCard}>
-            <Image source={{ uri: event.image }} style={styles.eventImage} />
+            <Image source={{ uri: event.image[0] }} style={styles.eventImage} />
             <Text style={styles.eventTitle}>{event.title}</Text>
             <Text>{event.description}</Text>
             <Text>{`Date: ${event.date}`}</Text>
             <Text>{`Location: ${event.location}`}</Text>
             <Text>{`Price: ${event.price}`}</Text>
             <Text>{`Seats: ${event.seats}`}</Text>
-            <Text>{`Category: ${event.category}`}</Text>
+            <Text>{`Category: ${event.category.join(", ")}`}</Text>
 
             <Pressable
               onPress={() => handleEditEvent(event.id)}

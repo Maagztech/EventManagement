@@ -20,7 +20,6 @@ import {
 import { Checkbox } from "react-native-paper";
 import LabeledInput from "./LabeledInput";
 import LabeledMultilineInput from "./LabeledMultilineInput";
-
 type AddEventModalProps = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -102,7 +101,7 @@ const EventAddandEdit = ({
       setEventData({
         title: selectedEvent.title,
         description: selectedEvent.description,
-        image: [selectedEvent.image], // Add image property
+        image: selectedEvent.image, // Add image property
         price: String(selectedEvent.price), // Convert to string
         category: selectedEvent.category,
         location: selectedEvent.location,
@@ -148,6 +147,8 @@ const EventAddandEdit = ({
     return (
       eventData.title &&
       eventData.image.length > 0 &&
+      eventData.description &&
+      eventData.date &&
       !isNaN(Number(eventData.price)) && // Ensure price is a valid number
       Number(eventData.price) > 0 &&
       eventData.category.length > 0 &&
@@ -181,16 +182,14 @@ const EventAddandEdit = ({
       }
       if (selectedEvent) {
         await axios.post(
-          `http://localhost:5000/api/events/${selectedEvent._id}`,
+          `https://eventsapi-umam.onrender.com/api/events/${selectedEvent._id}`,
           productPayload,
-          { headers: { Authorization: `${access_token}` } }
+          { headers: { Authorization: `Bearer ${access_token}` } }
         );
       } else {
-        await axios.post(
-          `http://localhost:5000/api/events`,
-          productPayload,
-          { headers: { Authorization: `${access_token}` } }
-        );
+        await axios.post(`https://eventsapi-umam.onrender.com/api/events`, productPayload, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
       }
 
       setEventData({
@@ -206,12 +205,9 @@ const EventAddandEdit = ({
     } catch (error) {
       console.log(error);
     }
-    const response = await axios.get(
-      "http://localhost:5000/api/events",
-      {
-        headers: { Authorization: `${access_token}` },
-      }
-    );
+    const response = await axios.get("https://eventsapi-umam.onrender.com/api/events", {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
     setMadeEvents(response.data);
     closeModal();
   };
@@ -235,7 +231,7 @@ const EventAddandEdit = ({
   const handleDropdownToggle = () => {
     setShowDropdown(!showDropdown);
   };
-  useEffect(() => {}, [eventData.image]);
+  const [showPicker, setShowPicker] = useState(false);
   return (
     <Modal
       visible={isOpen}
@@ -333,6 +329,26 @@ const EventAddandEdit = ({
                 </View>
               )}
 
+              <LabeledInput
+                label="Location"
+                value={eventData.location}
+                onChangeText={(value: any) =>
+                  setEventData((prevData) => ({
+                    ...prevData,
+                    location: value,
+                  }))
+                }
+              />
+              <LabeledInput
+                label="Date (YYYY-MM-DD)"
+                value={eventData.date}
+                onChangeText={(value: any) =>
+                  setEventData((prevData) => ({
+                    ...prevData,
+                    date: value,
+                  }))
+                }
+              />
               <LabeledInput
                 label="Price"
                 value={eventData.price}
@@ -531,6 +547,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 7,
     width: "100%",
+    height: 45,
     marginBottom: 10,
     flexDirection: "row",
     justifyContent: "space-between",
