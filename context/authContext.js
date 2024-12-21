@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   const currentPathname = useNavigationState((state) => {
     return state.routes[state.index] ? state.routes[state.index].name : null;
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -24,7 +24,6 @@ export const AuthProvider = ({ children }) => {
           setUserInfo(response.data.user)
           router.push("/(client)");
           setAccessToken(response.data.access_token)
-          console.log(response.data.access_token)
           Toast.show({
             type: 'success',
             text1: 'Sign In',

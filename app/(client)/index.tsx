@@ -1,3 +1,4 @@
+import { useEventContext } from "@/context/eventContext";
 import DatePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
@@ -17,7 +18,7 @@ import {
 export default function HomeScreen() {
   interface Event {
     _id: string;
-    image:string[];
+    image: string[];
     title: string;
     description: string;
     date: string;
@@ -26,6 +27,7 @@ export default function HomeScreen() {
     seats: number;
     category: string[];
   }
+  const { setMadeEvents }: any = useEventContext();
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredEvents, setFilteredEvents] = useState(events);
   useEffect(() => {
@@ -112,7 +114,10 @@ export default function HomeScreen() {
       <ScrollView>
         {filteredEvents.map((event, index) => (
           <Pressable
-            onPress={() => router.push(("/event/" + event._id) as never)}
+            onPress={() => {
+              setMadeEvents(event);
+              router.push(("/event/" + event._id) as never);
+            }}
             key={index}
             style={styles.card}
           >
@@ -190,6 +195,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
+    height: 40,
     backgroundColor: "#fff",
     marginRight: 5,
   },

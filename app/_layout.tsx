@@ -1,3 +1,4 @@
+import Loading from "@/components/events/GlobalLoader";
 import Header from "@/components/events/Headers";
 import { AuthProvider } from "@/context/authContext";
 import { EventProvider } from "@/context/eventContext";
@@ -42,6 +43,7 @@ export default function RootLayout() {
               edges={["top", "bottom", "left", "right"]}
             >
               <Header />
+              <Loading />
               <Stack>
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />
                 <Stack.Screen

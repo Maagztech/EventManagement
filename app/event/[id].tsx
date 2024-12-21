@@ -1,14 +1,14 @@
 import RegisterForEvent from "@/components/events/RegisterForEvent";
+import { useEventContext } from "@/context/eventContext";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   FlatList,
   Image,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
-  View,
 } from "react-native";
 
 type RouteParams = {
@@ -19,7 +19,7 @@ type RouteParams = {
 
 type Event = {
   _id: string;
-  images: string[];
+  image: string[];
   title: string;
   description: string;
   date: string;
@@ -34,24 +34,15 @@ export default function Xid() {
   const route = useRoute<RouteProp<RouteParams, "params">>();
   const { id } = route.params;
   const [open, setOpen] = useState(false);
-  useEffect(() => {
-    const fetchSingleEvent = async () => {
-      console.log(id)
-      const response = await axios.get(
-        "https://eventsapi-umam.onrender.com/api/events/" + id
-      );
-      setEvent(response.data);
-    };
-    fetchSingleEvent();
-  }, [id]);
+  const { madeEvents }: any = useEventContext();
   const handleRegister = () => {
     setOpen(true);
   };
-  if (!event) return null;
+  if (!madeEvents) return null;
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <FlatList
-        data={event.images}
+        data={madeEvents.image}
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item, index) => index.toString()}
@@ -59,24 +50,23 @@ export default function Xid() {
           <Image source={{ uri: item }} style={styles.image} />
         )}
       />
-      <Text style={styles.title}>{event.title}</Text>
-      <Text style={styles.description}>{event.description}</Text>
-      <Text style={styles.details}>Date: {event.date}</Text>
-      <Text style={styles.details}>Location: {event.location}</Text>
-      <Text style={styles.details}>Price: {event.price}</Text>
-      <Text style={styles.details}>Seats: {event.seats}</Text>
-      <Text style={styles.details}>Category: {event.category}</Text>
+      <Text style={styles.title}>{madeEvents.title}</Text>
+      <Text style={styles.description}>{madeEvents.description}</Text>
+      <Text style={styles.details}>Date: {madeEvents.date.split("T")[0]}</Text>
+      <Text style={styles.details}>Location: {madeEvents.location}</Text>
+      <Text style={styles.details}>Price: {madeEvents.price}</Text>
+      <Text style={styles.details}>Seats: {madeEvents.seats}</Text>
+      <Text style={styles.details}>Category: {madeEvents.category.join(", ")}</Text>
       <Pressable style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Register</Text>
       </Pressable>
       <RegisterForEvent isOpen={open} setIsOpen={setOpen} id={id} />
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 16,
     backgroundColor: "#f8f9fa",
   },
