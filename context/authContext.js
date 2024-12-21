@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   const currentPathname = useNavigationState((state) => {
     return state.routes[state.index] ? state.routes[state.index].name : null;
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {

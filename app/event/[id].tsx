@@ -1,6 +1,7 @@
 import RegisterForEvent from "@/components/events/RegisterForEvent";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
@@ -16,30 +17,37 @@ type RouteParams = {
   };
 };
 
-const event = {
-  id: "1",
-  title: "Music Festival",
-  description: "Enjoy a day full of music and fun!",
-  images: [
-    "https://via.placeholder.com/300",
-    "https://via.placeholder.com/300",
-    "https://via.placeholder.com/300",
-  ],
-  date: "2024-12-25",
-  location: "Central Park",
-  price: "$50",
-  seats: "100 available",
-  category: "Music",
+type Event = {
+  _id: string;
+  images: string[];
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+  price: string;
+  seats: string;
+  category: string[];
 };
+
 export default function Xid() {
+  const [event, setEvent] = useState<Event | null>(null);
   const route = useRoute<RouteProp<RouteParams, "params">>();
   const { id } = route.params;
   const [open, setOpen] = useState(false);
-  // Handle registration action
+  useEffect(() => {
+    const fetchSingleEvent = async () => {
+      console.log(id)
+      const response = await axios.get(
+        "https://eventsapi-umam.onrender.com/api/events/" + id
+      );
+      setEvent(response.data);
+    };
+    fetchSingleEvent();
+  }, [id]);
   const handleRegister = () => {
     setOpen(true);
   };
-
+  if (!event) return null;
   return (
     <View style={styles.container}>
       <FlatList

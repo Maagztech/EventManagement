@@ -121,7 +121,7 @@ export default function HomeScreen() {
             <Text style={styles.description}>{event.description}</Text>
             <Text style={styles.detail}>
               <Text style={styles.label}>Date: </Text>
-              {event.date}
+              {event.date.split("T")[0]}
             </Text>
             <Text style={styles.detail}>
               <Text style={styles.label}>Location: </Text>

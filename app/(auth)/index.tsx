@@ -29,6 +29,7 @@ export default function Index({}) {
       <Pressable
         style={styles.button}
         onPress={() => {
+          
           getUserInfo(userInfo);
         }}
       >
