@@ -341,7 +341,7 @@ const EventAddandEdit = ({
               />
               <LabeledInput
                 label="Date (YYYY-MM-DD)"
-                value={eventData.date}
+                value={eventData.date.split("T")[0]}
                 onChangeText={(value: any) =>
                   setEventData((prevData) => ({
                     ...prevData,
@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 7,
     width: "100%",
-    height: 45,
+    height: 50,
     marginBottom: 10,
     flexDirection: "row",
     justifyContent: "space-between",
